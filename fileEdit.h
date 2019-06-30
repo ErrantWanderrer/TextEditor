@@ -10,7 +10,7 @@ class FileEdit
 public:
     FileEdit();
 
-    QString openFile(const QString &filepath, QTextCodec *codec);
+    QString openFile(const QString &filepath);
     void saveFile(const QString &filepath, QString &text);
 
     ~FileEdit();
