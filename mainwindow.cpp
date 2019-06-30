@@ -19,19 +19,21 @@ MainWindow::MainWindow(QWidget *parent) :
     setCentralWidget(ui->textEdit);
     editor = new EditVisual(ui->textEdit);
     file = new FileEdit();
-    ui->actionOpen_file->setIcon(QIcon(":/Icon/icons/open.png"));
-    ui->actionSave_file->setIcon(QIcon(":/Icon/icons/save.png"));
-    ui->actionFile_directory->setIcon(QIcon(":/Icon/icons/file.png"));
-    connect(ui->actionOpen_file, &QAction::triggered, this, &MainWindow::openFile);
-    connect(ui->actionSave_file, &QAction::triggered, this, &MainWindow::saveFile);
+    ui->actionOpenFile->setIcon(QIcon(":/Icon/icons/open.png"));
+    ui->actionSaveFile->setIcon(QIcon(":/Icon/icons/save.png"));
+    ui->actionFileDirectory->setIcon(QIcon(":/Icon/icons/file.png"));
+    connect(ui->actionOpenFile, &QAction::triggered, this, &MainWindow::openFile);
+    connect(ui->actionFileDirectory, &QAction::triggered, this, &MainWindow::actionFileDirectory);
+    connect(ui->actionSaveFile, &QAction::triggered, this, &MainWindow::saveFile);
     connect(ui->actionCopy, &QAction::triggered, this, &MainWindow::Copy);
     connect(ui->actionPaste, &QAction::triggered, this, &MainWindow::Paste);
     connect(ui->actionCut, &QAction::triggered, this, &MainWindow::Cut);
-    connect(ui->actionSet_Text_Size, &QAction::triggered, this, &MainWindow::setTextSize);
-    connect(ui->actionSet_Text_Color, &QAction::triggered, this, &MainWindow::setTextColor);
-    connect(ui->actionSet_Text_Font, &QAction::triggered, this, &MainWindow::setTextFont);
-    connect(ui->actionSet_Text_Background_Color, &QAction::triggered, this, &MainWindow::setTextBackgroundColor);
-    connect(ui->actionSet_Background_Color, &QAction::triggered, this, &MainWindow::setBackgroundColor);
+    connect(ui->actionSetTextSize, &QAction::triggered, this, &MainWindow::setTextSize);
+    connect(ui->actionSetTextColor, &QAction::triggered, this, &MainWindow::setTextColor);
+    connect(ui->actionSetTextFont, &QAction::triggered, this, &MainWindow::setTextFont);
+    connect(ui->actionSetTextCodec, &QAction::triggered, this, &MainWindow::setTextCodec);
+    connect(ui->actionSetTextBackgroundColor, &QAction::triggered, this, &MainWindow::setTextBackgroundColor);
+    connect(ui->actionSetBackgroundColor, &QAction::triggered, this, &MainWindow::setBackgroundColor);
     ui->statusBar->showMessage("OK");
 }
 
@@ -42,7 +44,7 @@ MainWindow::~MainWindow()
     delete file;
 }
 
-void MainWindow::on_actionFile_directory_triggered()
+void MainWindow::actionFileDirectory()
 {
     File *wnd = new File(this);
     wnd->show();
@@ -53,20 +55,12 @@ void MainWindow::on_actionFile_directory_triggered()
 
 void MainWindow::openFile()
 {
-    QStringList Codec;
-    Codec<<("Win-1251")<<("UTF-8")<<("UTF-16")<<("UTF-32");
-    bool test;
-    QString file_codec = QInputDialog::getItem(this, ("Select the codec: "), ("Encoding format"), Codec, 0, false, &test);
-    if(test)
+    QString filePath = QFileDialog::getOpenFileName(this, ("Open file"));
+    if(filePath!="")
     {
-        QTextCodec *textCodec = QTextCodec::codecForName(file_codec.toStdString().c_str());
-        QString filePath = QFileDialog::getOpenFileName(this, ("Open file"));
-        if(filePath!="")
-        {
-            QString text = file->openFile(filePath, textCodec);
-            ui->textEdit->setPlainText(text);
-            ui->statusBar->showMessage("Read to file: " + filePath);
-        }
+        QString text = file->openFile(filePath);
+        ui->textEdit->setPlainText(text);
+        ui->statusBar->showMessage("Read to file: " + filePath);
     }
 }
 
@@ -137,5 +131,14 @@ void MainWindow::setBackgroundColor()
     editor->changeBackgroundColor(QColorDialog::getColor(editor->bgColor, this));
 }
 
-
-
+void MainWindow::setTextCodec()
+{
+    QStringList Codec;
+    Codec<<("Win-1251")<<("UTF-8")<<("UTF-16")<<("UTF-32");
+    QString fileCodec = QInputDialog::getItem(this, ("Select the codec: "), ("Encoding format"), Codec, 0, false);
+    QTextCodec *textCodec = QTextCodec::codecForName(fileCodec.toStdString().c_str());
+    QString text = ui->textEdit->toPlainText();
+    QTextStream fstream(&text);
+    fstream.setCodec(textCodec);
+    ui->textEdit->setPlainText(text);
+}
