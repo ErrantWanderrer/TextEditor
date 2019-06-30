@@ -21,13 +21,14 @@ private slots:
     void openFile();
     void saveFile();
     void fileDirectory(const QString &filePath);
-    void on_actionFile_directory_triggered();
+    void actionFileDirectory();
     void Copy();
     void Paste();
     void Cut();
     void setTextSize();
     void setTextColor();
     void setTextFont();
+    void setTextCodec();
     void setTextBackgroundColor();
     void setBackgroundColor();
 
