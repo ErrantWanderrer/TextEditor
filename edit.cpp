@@ -42,5 +42,5 @@ void EditVisual::changeBackgroundColor(const QColor bgColor)
 
 EditVisual::~EditVisual()
 {
-
+    delete editor;
 }
