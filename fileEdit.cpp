@@ -10,13 +10,11 @@ FileEdit::~FileEdit()
 
 }
 
-QString FileEdit::openFile(const QString &filepath, QTextCodec *codec)
+QString FileEdit::openFile(const QString &filepath)
 {
-    QString fileCodec;
     QFile file(filepath);
     QTextStream fstream(&file); // создание потока ввода текста
     file.open(QFile::ReadOnly);
-    fstream.setCodec(codec);
     QString text = fstream.readAll(); // считываем в поток все текстовое значение
     file.flush(); // метод позволяет считывать информацию без ожидания кэша с жесткого диска
     file.close();
